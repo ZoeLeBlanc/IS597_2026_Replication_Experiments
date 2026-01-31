@@ -4,8 +4,23 @@ Explore Theorists - Python replication of 5explore_theorists.R
 import pandas as pd
 import os
 
-# Set data directory
-DATA_DIR = "../data"
+def get_file_path(filename):
+    """Get path to data file. Rerun files stay in replication_code/data, others prefer original_project/data"""
+    original_data = os.path.join(os.path.dirname(__file__), "original_project", "data")
+    rerun_data = os.path.join(os.path.dirname(__file__), "data")
+
+    # If filename contains "rerun", use replication_code/data
+    if "rerun" in filename.lower():
+        return os.path.join(rerun_data, filename)
+
+    # Otherwise, prefer original_project/data, fall back to replication_code/data
+    original_path = os.path.join(original_data, filename)
+    if os.path.exists(original_path):
+        return original_path
+    return os.path.join(rerun_data, filename)
+
+# For backwards compatibility, set DATA_DIR to the base directory we'll use
+DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
 
 def clean_names(df):
@@ -17,7 +32,7 @@ def clean_names(df):
 
 def main():
     # Check if extended data exists
-    extended_file = f"{DATA_DIR}/4_theory_dictionary_wikidata_extended.csv"
+    extended_file = get_file_path("4_theory_dictionary_wikidata_extended.csv")
 
     if os.path.exists(extended_file):
         data = pd.read_csv(extended_file)
@@ -26,7 +41,7 @@ def main():
         print(f"Columns: {data.columns.tolist()}")
     else:
         # Use the humans data we have
-        humans_file = f"{DATA_DIR}/4_theorystrings_categories_humans.csv"
+        humans_file = get_file_path("4_theorystrings_categories_humans.csv")
         data = pd.read_csv(humans_file)
         data = clean_names(data)
         print(f"Using humans data with {len(data)} rows")

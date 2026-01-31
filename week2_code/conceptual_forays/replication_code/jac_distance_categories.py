@@ -6,8 +6,23 @@ import numpy as np
 import textdistance
 import os
 
-# Set data directory
-DATA_DIR = "../data"
+def get_file_path(filename):
+    """Get path to data file. Rerun files stay in replication_code/data, others prefer original_project/data"""
+    original_data = os.path.join(os.path.dirname(__file__), "original_project", "data")
+    rerun_data = os.path.join(os.path.dirname(__file__), "data")
+
+    # If filename contains "rerun", use replication_code/data
+    if "rerun" in filename.lower():
+        return os.path.join(rerun_data, filename)
+
+    # Otherwise, prefer original_project/data, fall back to replication_code/data
+    original_path = os.path.join(original_data, filename)
+    if os.path.exists(original_path):
+        return original_path
+    return os.path.join(rerun_data, filename)
+
+# For backwards compatibility, set DATA_DIR to the base directory we'll use
+DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
 
 def calculate_jaccard_qgram(s1, s2, q=3):
@@ -27,7 +42,7 @@ def calculate_levenshtein(s1, s2):
 
 def main():
     # Read categories retrieved from matching with "theory of" strings
-    categories_wikipedia = pd.read_csv(f"{DATA_DIR}/2_wikipediacategoriesfromquery.csv")
+    categories_wikipedia = pd.read_csv(get_file_path("2_wikipediacategoriesfromquery.csv"))
 
     print(f"Columns: {categories_wikipedia.columns.tolist()}")
     print(f"Unique titles: {categories_wikipedia['title'].nunique()}")
@@ -79,7 +94,7 @@ def main():
     print(f"After filtering: {len(df_filtered)} rows")
 
     # Save filtered categories
-    output_file = f"{DATA_DIR}/3_wikicategories_distances_filtered_rerun.csv"
+    output_file = get_file_path("3_wikicategories_distances_filtered_rerun.csv")
     df_filtered.to_csv(output_file, index=False)
     print(f"Saved filtered categories to {output_file}")
 

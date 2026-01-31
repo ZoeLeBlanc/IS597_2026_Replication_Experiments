@@ -4,8 +4,23 @@ Preprocessing Data - Python replication of 1preprocessingdata.R
 import pandas as pd
 import os
 
-# Set data directory
-DATA_DIR = "../data"
+def get_file_path(filename):
+    """Get path to data file. Rerun files stay in replication_code/data, others prefer original_project/data"""
+    original_data = os.path.join(os.path.dirname(__file__), "original_project", "data")
+    rerun_data = os.path.join(os.path.dirname(__file__), "data")
+
+    # If filename contains "rerun", use replication_code/data
+    if "rerun" in filename.lower():
+        return os.path.join(rerun_data, filename)
+
+    # Otherwise, prefer original_project/data, fall back to replication_code/data
+    original_path = os.path.join(original_data, filename)
+    if os.path.exists(original_path):
+        return original_path
+    return os.path.join(rerun_data, filename)
+
+# For backwards compatibility, set DATA_DIR to the base directory we'll use
+DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
 def clean_names(df):
     """Clean column names: lowercase, replace spaces/special chars with underscores"""
@@ -23,9 +38,9 @@ def clean_names(df):
 
 def main():
     # Read data
-    jjtheory = pd.read_csv(f"{DATA_DIR}/1_JJ_theor_.csv")
-    nntheory = pd.read_csv(f"{DATA_DIR}/1_NN_theor_.csv")
-    theory = pd.read_csv(f"{DATA_DIR}/1_theor_of_normalized.csv")
+    jjtheory = pd.read_csv(get_file_path("1_JJ_theor_.csv"))
+    nntheory = pd.read_csv(get_file_path("1_NN_theor_.csv"))
+    theory = pd.read_csv(get_file_path("1_theor_of_normalized.csv"))
 
     print(f"JJ Theory shape: {jjtheory.shape}")
     print(f"NN Theory shape: {nntheory.shape}")
@@ -87,14 +102,14 @@ def main():
     print(f"\nUnique theories of: {len(unique_theoriesof)}")
 
     # Write csv with unique "theor* of" strings
-    output_file = f"{DATA_DIR}/1_theoriesof_complete_rerun.csv"
+    output_file = get_file_path("1_theoriesof_complete_rerun.csv")
     unique_theoriesof.to_csv(output_file, index=False)
     print(f"Saved to {output_file}")
 
     # Compare different "theor* of" sets
-    jj_orig = pd.read_csv(f"{DATA_DIR}/1_JJ_theor_.csv")
-    nn_orig = pd.read_csv(f"{DATA_DIR}/1_NN_theor_.csv")
-    theory_orig = pd.read_csv(f"{DATA_DIR}/1_theor_of_normalized.csv")
+    jj_orig = pd.read_csv(get_file_path("1_JJ_theor_.csv"))
+    nn_orig = pd.read_csv(get_file_path("1_NN_theor_.csv"))
+    theory_orig = pd.read_csv(get_file_path("1_theor_of_normalized.csv"))
 
     set_A = set(jj_orig.iloc[:, 0].dropna().str.strip())
     set_B = set(nn_orig.iloc[:, 0].dropna().str.strip())

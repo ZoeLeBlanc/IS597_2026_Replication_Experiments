@@ -5,8 +5,23 @@ import requests
 import pandas as pd
 import os
 
-# Set data directory
-DATA_DIR = "../data"
+def get_file_path(filename):
+    """Get path to data file. Rerun files stay in replication_code/data, others prefer original_project/data"""
+    original_data = os.path.join(os.path.dirname(__file__), "original_project", "data")
+    rerun_data = os.path.join(os.path.dirname(__file__), "data")
+
+    # If filename contains "rerun", use replication_code/data
+    if "rerun" in filename.lower():
+        return os.path.join(rerun_data, filename)
+
+    # Otherwise, prefer original_project/data, fall back to replication_code/data
+    original_path = os.path.join(original_data, filename)
+    if os.path.exists(original_path):
+        return original_path
+    return os.path.join(rerun_data, filename)
+
+# For backwards compatibility, set DATA_DIR to the base directory we'll use
+DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
 
 def query_wikidata(query):
@@ -51,10 +66,10 @@ SERVICE wikibase:label {{ bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en"
 
 def main():
     # Load filtered data
-    if os.path.exists(f"{DATA_DIR}/3_wikicategories_distances_filtered.csv"):
-        data = pd.read_csv(f"{DATA_DIR}/3_wikicategories_distances_filtered.csv")
+    if os.path.exists(get_file_path("3_wikicategories_distances_filtered.csv")):
+        data = pd.read_csv(get_file_path("3_wikicategories_distances_filtered.csv"))
     else:
-        data = pd.read_csv(f"{DATA_DIR}/3_wikicategories_distances_filtered_rerun.csv")
+        data = pd.read_csv(get_file_path("3_wikicategories_distances_filtered_rerun.csv"))
 
     print(f"Loaded {len(data)} filtered categories")
 
@@ -78,7 +93,7 @@ def main():
     df_humans = pd.DataFrame(all_results)
 
     # Save results
-    output_file = f"{DATA_DIR}/4_theorystrings_categories_humans.csv"
+    output_file = get_file_path("4_theorystrings_categories_humans.csv")
     df_humans.to_csv(output_file, index=False)
     print(f"Saved {len(df_humans)} results to {output_file}")
 
@@ -90,7 +105,7 @@ def main():
     print(f"Unique humans: {len(df_unique)}")
 
     # Save unique humans
-    unique_output_file = f"{DATA_DIR}/4_theorystrings_categories_humans_unique.csv"
+    unique_output_file = get_file_path("4_theorystrings_categories_humans_unique.csv")
     df_unique.to_csv(unique_output_file, index=False)
     print(f"Saved unique humans to {unique_output_file}")
 

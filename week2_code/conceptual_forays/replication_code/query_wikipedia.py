@@ -5,8 +5,23 @@ import requests
 import pandas as pd
 import os
 
-# Set data directory
-DATA_DIR = "../data"
+def get_file_path(filename):
+    """Get path to data file. Rerun files stay in replication_code/data, others prefer original_project/data"""
+    original_data = os.path.join(os.path.dirname(__file__), "original_project", "data")
+    rerun_data = os.path.join(os.path.dirname(__file__), "data")
+
+    # If filename contains "rerun", use replication_code/data
+    if "rerun" in filename.lower():
+        return os.path.join(rerun_data, filename)
+
+    # Otherwise, prefer original_project/data, fall back to replication_code/data
+    original_path = os.path.join(original_data, filename)
+    if os.path.exists(original_path):
+        return original_path
+    return os.path.join(rerun_data, filename)
+
+# For backwards compatibility, set DATA_DIR to the base directory we'll use
+DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
 
 def query_wikipedia_categories(query_string):
@@ -34,10 +49,10 @@ def query_wikipedia_categories(query_string):
 
 def main():
     # Get file with all "theory of strings"
-    if os.path.exists(f"{DATA_DIR}/1_theoriesof_complete.csv"):
-        string_filename = f"{DATA_DIR}/1_theoriesof_complete.csv"
+    if os.path.exists(get_file_path("1_theoriesof_complete.csv")):
+        string_filename = get_file_path("1_theoriesof_complete.csv")
     else:
-        string_filename = f"{DATA_DIR}/1_theoriesof_complete_rerun.csv"
+        string_filename = get_file_path("1_theoriesof_complete_rerun.csv")
 
     # Read with pandas
     df = pd.read_csv(string_filename)
@@ -66,7 +81,7 @@ def main():
         all_results_df["category"] = all_results_df["title"].str.replace("Category:", "", regex=False)
 
     # Save results in csv
-    output_file = f"{DATA_DIR}/2_wikipediacategoriesfromquery.csv"
+    output_file = get_file_path("2_wikipediacategoriesfromquery.csv")
     all_results_df.to_csv(output_file, index=False)
     print(f"Saved to {output_file}")
 
