@@ -20,3 +20,6 @@ env/
 .RData
 .Ruserdata
 *_code_cache/
+
+# Week 3 Specific Files
+week3_code/replication_code/data/
