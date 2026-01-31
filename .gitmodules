@@ -1,3 +1,6 @@
 [submodule "replication_code/original_project"]
 	path = replication_code/original_project
 	url = git@github.com:theory-in-dh/conceptual_forays.git
+[submodule "week3_code/week3/horizon"]
+	path = week3_code/week3/horizon
+	url = git@github.com:tedunderwood/horizon.git
