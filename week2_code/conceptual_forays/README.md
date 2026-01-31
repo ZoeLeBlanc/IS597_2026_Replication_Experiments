@@ -2,9 +2,7 @@
 
 This week's assignment replicates the research pipeline from:
 
-> Gutierrez, S., Burghardt, M., Niekler, A., & Kleymann, R.
-> "Conceptual Forays: A Corpus-based Study of 'Theory' in Digital Humanities
-> Journals" (JoCA 2022 / DH 2022).
+Kleymann, Rabea, Andreas Niekler, and Manuel Burghardt. “Conceptual Forays: A Corpus-Based Study of ‘Theory’ in Digital Humanities Journals.” *Journal of Cultural Analytics* 7, no. 4 (December 19, 2022).
 
 ## Directory Layout
 
