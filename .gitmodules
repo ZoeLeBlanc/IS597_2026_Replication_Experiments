@@ -4,3 +4,6 @@
 [submodule "week3_code/week3/horizon"]
 	path = week3_code/week3/horizon
 	url = git@github.com:tedunderwood/horizon.git
+[submodule "week3_code/original_project/horizon"]
+	path = week3_code/original_project/horizon
+	url = git@github.com:tedunderwood/horizon.git
