@@ -1,0 +1,3 @@
+[submodule "replication_code/original_project"]
+	path = replication_code/original_project
+	url = git@github.com:theory-in-dh/conceptual_forays.git
